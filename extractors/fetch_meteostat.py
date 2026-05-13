@@ -95,11 +95,6 @@ def fetch_meteostat(coordinates, start_date, end_date):
     # Re order date:
     df.sort_values('datetime', inplace = True)
 
-    # Useful df prints:
-    print(df.head())
-    print("\n")
-    df.info()
-
     return df
 
 # Test function:

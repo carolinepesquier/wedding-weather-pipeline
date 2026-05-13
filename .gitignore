@@ -1,0 +1,20 @@
+# Never commit:
+# Virtual environment:
+venv/
+
+# Google Cloud credentials
+*.json
+.env
+secrets/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Logs
+logs/
+*.log
+
+# VS Code settings
+.vscode/
