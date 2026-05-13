@@ -98,5 +98,8 @@ def fetch_meteostat(coordinates, start_date, end_date):
     return df
 
 # Test function:
-wedding_place = (51.5540, 0.2520, 22)
-df = fetch_meteostat(wedding_place, start_date = '2024-01-01', end_date = '2024-02-28')
+if __name__ == "__main__":
+    wedding_place = (51.5540, 0.2520, 22)
+    df = fetch_meteostat(wedding_place, start_date = '2024-01-01', end_date = '2024-02-28')
+    print(df.head())
+    df.info()
