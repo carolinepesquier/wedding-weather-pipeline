@@ -10,3 +10,4 @@ CACHE_EXP_DAILY = 3600     # 1 hour — recent data may update
 PROJECT_ID = "wedding-weather-496115"
 METEOSTAT_TABLE = f"{PROJECT_ID}.bronze.meteostat_hourly_bronze"
 OPEN_METEO_TABLE = f"{PROJECT_ID}.bronze.open_meteo_hourly_bronze"
+VISUAL_CROSSING_TABLE = f"{PROJECT_ID}.bronze.visual_crossing_hourly_bronze"

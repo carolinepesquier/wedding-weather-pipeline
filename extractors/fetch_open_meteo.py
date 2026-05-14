@@ -95,12 +95,13 @@ def fetch_open_meteo(cache_exp, coordinates, start_date, end_date):
         'air_pressure_avg': 'Float64',
         'sunshine_duration': 'Float64',
         'cloud_cover_avg': 'Float64',
-        'visibility': 'Int64',
+        'visibility': 'Float64',
         'weather_code': 'Float64',
         'location_name': 'string',
         'station_id': 'string',
         'rare_weather_description': 'string',
         'apparent_temperature': 'Float64',
+        'ingested_at': 'datetime64[us]'
         }
     )
 

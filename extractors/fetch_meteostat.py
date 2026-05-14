@@ -49,7 +49,7 @@ def fetch_meteostat(coordinates, start_date, end_date):
         'temp': 'temperature',
         'dwpt': 'dew_point',
         'rhum': 'relative_humidity',
-        'prcp': 'rainfall',
+        'prcp': 'precipitation',
         'snow': 'snowfall',
         'snwd': 'snow_depth',
         'wdir': 'wind_direction',
@@ -70,7 +70,7 @@ def fetch_meteostat(coordinates, start_date, end_date):
         'temperature': 'Float64',
         'dew_point': 'Float64',
         'relative_humidity': 'Int64',
-        'rainfall': 'Float64',
+        'precipitation': 'Float64',
         'snowfall': 'Int64',
         'snow_depth': 'Int64',
         'wind_direction': 'Int64',
@@ -79,8 +79,8 @@ def fetch_meteostat(coordinates, start_date, end_date):
         'air_pressure_avg': 'Float64',
         'sunshine_duration': 'Int64',
         'cloud_cover_avg': 'Int64',
-        'visibility': 'Int64',
-        'weather_code': 'Int64'
+        'visibility': 'Float64',
+        'weather_code': 'Int64',
         }
     )
 
