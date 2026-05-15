@@ -8,10 +8,12 @@ from config import WEDDING_PLACE, METEOSTAT_TABLE, CACHE_EXP_BACKFILL, OPEN_METE
 from dotenv import load_dotenv
 import os
 
-start = date(2026, 4, 2)
+start = date(2026, 3, 22)
 end = date(2026, 4, 30)
 load_dotenv()
 API_KEY = os.getenv("VISUAL_CROSSING_API_KEY")
+if not API_KEY:
+    raise ValueError("Visual Crossing API key not found. Please set the VISUAL_CROSSING_API_KEY environment variable.")
 
 # Loading in chunks to not hit Big Query 4,000 partition limit:
 current = start
@@ -19,7 +21,7 @@ while current < end:
     chunk_end = min(current.replace(year = current.year + 1) - relativedelta(days = 1), end)
     print(f"Fetching {current} to {chunk_end}...")
 
-# Meteostat backfill: 20 years
+# Meteostat backfill: 20 years - DONE
 #    df_ms = fetch_meteostat(
 #        coordinates=WEDDING_PLACE,
 #        start_date=current,
@@ -28,7 +30,7 @@ while current < end:
     
 #    load_to_bigquery(df_ms, METEOSTAT_TABLE)
 
-    # Open-Meteo backfill: 20 years - No sequential backfill needed as data is fetched from API on demand and cached.
+    # Open-Meteo backfill: 20 years - DONE
     #df_om = fetch_open_meteo(
     #    cache_exp = CACHE_EXP_BACKFILL,
     #    coordinates = WEDDING_PLACE,
@@ -37,7 +39,7 @@ while current < end:
     #)
     #load_to_bigquery(df_om, OPEN_METEO_TABLE)
 
-    # Visual_Crossing backfill test:
+    # Visual_Crossing backfill test - HANDLED IN run_vc_backfill_scheduled.py (backfill automated as only 1,000 API calls available per day).
     df_vc = fetch_visual_crossing(
         api_key = API_KEY,
         coordinates = WEDDING_PLACE,

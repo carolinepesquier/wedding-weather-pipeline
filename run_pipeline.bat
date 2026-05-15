@@ -1,4 +1,3 @@
 @echo off
-cd C:\Projects\wedding-weather-pipeline
-call venv\Scripts\activate.bat
-python main.py >> logs\pipeline.log 2>&1
+cd C:\Users\pesquic\wedding-weather-pipeline
+venv\Scripts\python.exe main.py >> logs\pipeline.log 2>&1

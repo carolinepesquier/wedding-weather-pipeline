@@ -29,6 +29,8 @@ load_to_bigquery(df_om, OPEN_METEO_TABLE)
 # Visual_Crossing daily run: fetch yesterday's data
 load_dotenv()
 API_KEY = os.getenv("VISUAL_CROSSING_API_KEY")
+if not API_KEY:
+    raise ValueError("Visual Crossing API key not found. Please set the VISUAL_CROSSING_API_KEY environment variable.")
 df_vc = fetch_visual_crossing(
     api_key=API_KEY,
     coordinates = WEDDING_PLACE,
