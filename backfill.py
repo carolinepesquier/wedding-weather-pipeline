@@ -3,7 +3,7 @@ from dateutil.relativedelta import relativedelta
 from extractors.fetch_meteostat import fetch_meteostat
 from extractors.fetch_open_meteo import fetch_open_meteo
 from extractors.fetch_visual_crossing import fetch_visual_crossing
-from load import load_to_bigquery
+from load_bronze import load_to_bigquery
 from config import WEDDING_PLACE, METEOSTAT_TABLE, CACHE_EXP_BACKFILL, OPEN_METEO_TABLE, VISUAL_CROSSING_TABLE
 from dotenv import load_dotenv
 import os
@@ -22,22 +22,21 @@ while current < end:
     print(f"Fetching {current} to {chunk_end}...")
 
     # Meteostat backfill: 20 years - DONE
-    #    df_ms = fetch_meteostat(
-    #        coordinates=WEDDING_PLACE,
-    #        start_date=current,
-    #        end_date=chunk_end
-    #    )
-        
-    #    load_to_bigquery(df_ms, METEOSTAT_TABLE)
+    df_ms = fetch_meteostat(
+            coordinates=WEDDING_PLACE,
+            start_date = current,
+            end_date = chunk_end
+    )
+    load_to_bigquery(df_ms, METEOSTAT_TABLE)
 
     # Open-Meteo backfill: 20 years - DONE
-    df_om = fetch_open_meteo(
-        cache_exp = CACHE_EXP_BACKFILL,
-        coordinates = WEDDING_PLACE,
-        start_date = current,
-        end_date = chunk_end
-    )
-    load_to_bigquery(df_om, OPEN_METEO_TABLE)
+    #df_om = fetch_open_meteo(
+    #    cache_exp = CACHE_EXP_BACKFILL,
+    #    coordinates = WEDDING_PLACE,
+    #    start_date = current,
+    #    end_date = chunk_end
+    #)
+    #load_to_bigquery(df_om, OPEN_METEO_TABLE)
 
     # Visual_Crossing backfill test - HANDLED IN run_vc_backfill_scheduled.py (backfill automated as only 1,000 API calls available per day).
     #df_vc = fetch_visual_crossing(

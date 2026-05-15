@@ -2,7 +2,7 @@ from datetime import date, timedelta
 from extractors.fetch_meteostat import fetch_meteostat
 from extractors.fetch_open_meteo import fetch_open_meteo
 from extractors.fetch_visual_crossing import fetch_visual_crossing
-from load import load_to_bigquery
+from load_bronze import load_to_bigquery
 from config import WEDDING_PLACE, METEOSTAT_TABLE, OPEN_METEO_TABLE, VISUAL_CROSSING_TABLE, CACHE_EXP_DAILY
 from dotenv import load_dotenv
 import os

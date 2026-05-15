@@ -144,6 +144,6 @@ print("Loaded {} rows.".format(destination_table.num_rows))
 # Add apparent_temperature to existing Visual Crossing table:
 client.query("""
     ALTER TABLE `wedding-weather-496115.bronze.visual_crossing_hourly_bronze`
-    ADD COLUMN IF NOT EXISTS rainfall STRING
+    ADD COLUMN IF NOT EXISTS rainfall FLOAT64
 """).result()
 print("Added rainfall column to visual_crossing_hourly_bronze")

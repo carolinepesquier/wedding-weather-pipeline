@@ -1,7 +1,7 @@
 import pandas as pd
 from datetime import date
 from extractors.fetch_visual_crossing import fetch_visual_crossing
-from load import load_to_bigquery
+from load_bronze import load_to_bigquery
 from config import WEDDING_PLACE, VISUAL_CROSSING_TABLE
 from dotenv import load_dotenv
 import os
