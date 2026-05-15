@@ -70,12 +70,12 @@ def fetch_open_meteo(cache_exp, coordinates, start_date, end_date):
     hourly_data["relative_humidity"] = hourly_relative_humidity_2m
     hourly_data["precipitation"] = hourly_precipitation
     hourly_data["snowfall"] = hourly_snowfall
-    hourly_data["snow_depth"] = hourly_snow_depth * 100     # Convert from m to cm to be consistent with Meteostat
+    hourly_data["snow_depth"] = hourly_snow_depth
     hourly_data["wind_direction"] = hourly_wind_direction_10m
     hourly_data["wind_speed_avg"] = hourly_wind_speed_10m
     hourly_data["wind_gust_peak"] = hourly_wind_gusts_10m
     hourly_data["air_pressure_avg"] = hourly_pressure_msl
-    hourly_data["sunshine_duration"] = hourly_sunshine_duration / 60   # Convert from seconds to minutes to be consistent with Meteostat
+    hourly_data["sunshine_duration"] = hourly_sunshine_duration
     hourly_data["cloud_cover_avg"] = hourly_cloud_cover
     hourly_data["visibility"] = pd.NA   # Not available in Open-Meteo, but we want to keep the same schema as Meteostat for easier comparison and potential future enrichment.
     hourly_data["weather_code"] = hourly_weather_code
