@@ -21,7 +21,12 @@ def fetch_open_meteo(cache_exp, coordinates, start_date, end_date):
         "longitude": coordinates[1],
         "start_date": start_date,
         "end_date": end_date,
-        "hourly": ["temperature_2m", "relative_humidity_2m", "dew_point_2m", "rain", "snowfall", "snow_depth", "weather_code", "cloud_cover", "wind_speed_10m", "wind_direction_10m", "wind_gusts_10m", "pressure_msl", "sunshine_duration", "apparent_temperature"],
+        "hourly": ["temperature_2m", "relative_humidity_2m",
+                    "dew_point_2m", "precipitation", "snowfall", "snow_depth",
+                    "weather_code", "cloud_cover", "wind_speed_10m",
+                    "wind_direction_10m", "wind_gusts_10m",
+                    "pressure_msl", "sunshine_duration",
+                    "apparent_temperature", "direct_radiation", "rain"],
     }
     responses = openmeteo.weather_api(url, params = params)
 
@@ -36,7 +41,7 @@ def fetch_open_meteo(cache_exp, coordinates, start_date, end_date):
     hourly_temperature_2m = hourly.Variables(0).ValuesAsNumpy()
     hourly_relative_humidity_2m = hourly.Variables(1).ValuesAsNumpy()
     hourly_dew_point_2m = hourly.Variables(2).ValuesAsNumpy()
-    hourly_rain = hourly.Variables(3).ValuesAsNumpy()
+    hourly_precipitation = hourly.Variables(3).ValuesAsNumpy()
     hourly_snowfall = hourly.Variables(4).ValuesAsNumpy()
     hourly_snow_depth = hourly.Variables(5).ValuesAsNumpy()
     hourly_weather_code = hourly.Variables(6).ValuesAsNumpy()
@@ -47,6 +52,8 @@ def fetch_open_meteo(cache_exp, coordinates, start_date, end_date):
     hourly_pressure_msl = hourly.Variables(11).ValuesAsNumpy()
     hourly_sunshine_duration = hourly.Variables(12).ValuesAsNumpy()
     hourly_apparent_temperature = hourly.Variables(13).ValuesAsNumpy()
+    hourly_direct_radiation = hourly.Variables(14).ValuesAsNumpy()
+    hourly_direct_rain = hourly.Variables(15).ValuesAsNumpy()
 
 
     hourly_data = {
@@ -61,7 +68,7 @@ def fetch_open_meteo(cache_exp, coordinates, start_date, end_date):
     hourly_data["temperature"] = hourly_temperature_2m
     hourly_data["dew_point"] = hourly_dew_point_2m
     hourly_data["relative_humidity"] = hourly_relative_humidity_2m
-    hourly_data["rainfall"] = hourly_rain
+    hourly_data["precipitation"] = hourly_precipitation
     hourly_data["snowfall"] = hourly_snowfall
     hourly_data["snow_depth"] = hourly_snow_depth * 100     # Convert from m to cm to be consistent with Meteostat
     hourly_data["wind_direction"] = hourly_wind_direction_10m
@@ -74,6 +81,8 @@ def fetch_open_meteo(cache_exp, coordinates, start_date, end_date):
     hourly_data["weather_code"] = hourly_weather_code
     hourly_data["rare_weather_description"] =  pd.NA
     hourly_data["apparent_temperature"] = hourly_apparent_temperature
+    hourly_data["solar_radiation"] = hourly_direct_radiation
+    hourly_data["rainfall"] = hourly_direct_rain
     hourly_data['location_name'] = location_name
     hourly_data['station_id'] = 'Open-Meteo (no station)'
     hourly_data['ingested_at'] = pd.Timestamp.now()
@@ -86,7 +95,7 @@ def fetch_open_meteo(cache_exp, coordinates, start_date, end_date):
         'temperature': 'Float64',
         'dew_point': 'Float64',
         'relative_humidity': 'Float64',
-        'rainfall': 'Float64',
+        'precipitation': 'Float64',
         'snowfall': 'Float64',
         'snow_depth': 'Float64',
         'wind_direction': 'Float64',
@@ -101,6 +110,8 @@ def fetch_open_meteo(cache_exp, coordinates, start_date, end_date):
         'station_id': 'string',
         'rare_weather_description': 'string',
         'apparent_temperature': 'Float64',
+        'solar_radiation': 'Float64',
+        'rainfall': 'Float64',
         'ingested_at': 'datetime64[us]'
         }
     )

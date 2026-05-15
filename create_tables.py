@@ -89,11 +89,13 @@ print("Created table {}.{}.{}".format(table.project, table.dataset_id, table.tab
 destination_table = client.get_table(table_id)
 print("Loaded {} rows.".format(destination_table.num_rows))
 
-# Add precipitation_type and source to existing Open_Meteo table:
+# Add precipitation_type, source, precipitation and solar_radiation to existing Open_Meteo table:
 client.query("""
     ALTER TABLE `wedding-weather-496115.bronze.open_meteo_hourly_bronze`
     ADD COLUMN IF NOT EXISTS precipitation_type STRING, 
-    ADD COLUMN IF NOT EXISTS source STRING
+    ADD COLUMN IF NOT EXISTS source STRING,
+    ADD COLUMN IF NOT EXISTS precipitation FLOAT64,
+    ADD COLUMN IF NOT EXISTS solar_radiation FLOAT64
 """).result()
 print("Added precipitation_type and source columns to open_meteo_hourly_bronze")
 
