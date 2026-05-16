@@ -20,11 +20,15 @@ today = pd.to_datetime(today)
 script_dir = os.path.dirname(os.path.abspath(__file__))
 csv_path = os.path.join(script_dir, "vc_backfill_schedule.csv")
 schedule = pd.read_csv(csv_path, sep = "\t")
-schedule = schedule.astype({
-    'Run_date':'datetime64[us]',
-    'Start':'datetime64[us]',
-    'End':'datetime64[us]'
-})
+
+# Forcing date format with day first:
+schedule['Start'] = pd.to_datetime(schedule['Start'], dayfirst=True).astype('datetime64[us]')
+schedule['End'] = pd.to_datetime(schedule['End'], dayfirst=True).astype('datetime64[us]')
+schedule['Run_date'] = pd.to_datetime(schedule['Run_date'], dayfirst=True).astype('datetime64[us]')
+
+
+print(schedule['Start'].iloc[0])
+print(schedule.info())
 
 # Trigger action on today's date only:
 match_found = False
