@@ -1,34 +1,188 @@
 # Wedding Weather Pipeline
 
-A personal data engineering & ML project ingesting historical hourly weather data 
-for Upminster, London from three sources (Meteostat, Open-Meteo, Visual Crossing) 
-into Google BigQuery to forecast the weather on D-DAY.
+## 📋 Project Summary
+A personal data engineering & data science project thats:
+- ingests historical hourly weather data from my London-ish wedding venue into Google BigQuery to forecast the weather on D-Day.
+- compares several time-serie forecast models and combine the most performing ones.
+- compares the relevance of each datasource.
+- analyse the importance of each feature.
+- predict rain and temperature profile on D-day
 
-## Stack
-- Python 3.13
+## 🎯 Objective 
+Given an (outdoor) wedding venue, I want to know, for D-Day:
+- chances of rain and associated predicted hourly rainfall 
+- predicted hourly temperature profile
+That will allow me elaborate back up plans for guests to enjoy themselves despite possible adversarial weather.
+
+## 🏗️ Architecture Overview
+```mermaid
+flowchart TD
+    subgraph Sources["📡 Data Sources"]
+        MS[Meteostat\nStation Observations]
+        OM[Open-Meteo\nERA5 Reanalysis]
+        VC[Visual Crossing\nGrid Interpolation]
+    end
+
+    subgraph Bronze["🥉 Bronze Layer · BigQuery"]
+        B1[meteostat_hourly_bronze]
+        B2[open_meteo_hourly_bronze]
+        B3[visual_crossing_hourly_bronze]
+    end
+
+    subgraph Silver["🥈 Silver Layer · BigQuery"]
+        S1[meteostat_hourly_silver]
+        S2[open_meteo_hourly_silver]
+        S3[visual_crossing_hourly_silver]
+    end
+
+    subgraph Ref["📚 Reference Layer · BigQuery"]
+        R1[meteostat_weather_codes]
+        R2[open_meteo_weather_codes]
+    end
+
+    subgraph ML["🤖 ML Layer · Local + Cloud Run"]
+        FE[Feature Engineering]
+        EX[Experiments\nLinReg · XGBoost · SARIMAX\nProphet · LSTM]
+        DR[Drift Detection\nEvidently AI]
+        RT[Scheduled Retraining\nCloud Run]
+    end
+
+    subgraph Tracking["📊 ML Tracking · GCS"]
+        MF[MLflow\nExperiment Tracking]
+        AR[Model Artefacts\nGCS Bucket]
+    end
+
+    subgraph Gold["🥇 Gold Layer · BigQuery"]
+        G1[Forecasts + Actuals]
+        G2[Model Performance]
+    end
+
+    PBI[📈 Power BI\nReporting]
+
+    MS --> B1
+    OM --> B2
+    VC --> B3
+
+    B1 -->|Daily Scheduled Query| S1
+    B2 -->|Daily Scheduled Query| S2
+    B3 -->|Daily Scheduled Query| S3
+
+    S1 & S2 & S3 --> FE
+    R1 & R2 --> Gold
+
+    FE --> EX
+    EX --> DR
+    DR --> RT
+    EX --> MF
+    RT --> MF
+    MF --> AR
+
+    S1 & S2 & S3 --> Gold
+    AR --> G1
+    MF --> G2
+
+    G1 & G2 --> PBI
+```
+
+## 📊 Data Sources
+3 sources providing historical data fetched from the web:
+- Meteostat: Maintained python library providing historical observations by weather stations.
+https://dev.meteostat.net/python
+- Open-Meteo: Free online API available with mixed reanalysis data (ERA5) and interpolated data from nearby stations.
+https://open-meteo.com/en/docs
+- Visual Crossing: Free 1,000 API calls daily providing re-model signals only, on a 9km grid basis.
+https://www.visualcrossing.com/weather-api
+
+The type of historical data provided by each source are different (stations observation, interpolated data from nearby station (covers entire territory) and mixed) and are retrieved as such by design, to allow for comparison.
+
+## 🔄 Pipeline Layers
+- Big Query Bronze layer: Ingest raw, unmodified data from 3 datasources
+- Big Query Silver layer: Convert datasources to the same units and feed into Machine Learning experiments. NULLS preserved as observed.
+- Big Query Gold layer: Provide human-readable data for reporting (by joining reference tables for weather code descriptions), including the output of the ML retained design.
+
+## ⚙️ Technical Stack
+- Python 3.13.13
 - Google BigQuery
 - Meteostat / Open-Meteo / Visual Crossing APIs
+- Google Colab & Visual Studio Code
+- Docker container
+- ML Flow
+- Cloud Run
 
-## Status
-🚧 In progress
+## 🗂️ Repository Structure
+```
+wedding-weather-pipeline/
+├── extractors/
+│   ├── fetch_meteostat.py
+│   ├── fetch_open_meteo.py
+│   ├── fetch_visual_crossing.py
+│   └── utils.py
+├── logs/
+├── backfill.py
+├── config.py
+├── create_bronze_tables.py
+├── create_silver_tables.py
+├── load_bronze.py
+├── main.py
+├── meteostat_weather_codes_mapping.csv
+├── open_meteo_weather_codes_mapping.csv
+├── run_pipeline.bat
+├── run_vc_backfill.bat
+├── vc_backfill_schedule.csv
+├── vc_backfill_scheduled.py
+├── requirements.txt
+└── README.md
+```
 
+Note: ml/ folder is coming.
 
-# Wedding Weather Pipeline
+## 📈 Status
+Data engineering:
+- Bronze: Done
+- Silver: Done
+- Gold: Not started
 
-## 📋 Project Summary          ← non-technical, 3-4 sentences
-## 🎯 Objective                ← what problem it solves
-## 🏗️ Architecture Overview    ← simple diagram, plain English
-## 📊 Data Sources             ← what, where, coverage
-## 🔄 Pipeline Layers          ← Bronze/Silver/ML in plain English
-## ⚙️ Technical Stack          ← full stack list
-## 🗂️ Repository Structure     ← folder structure
-## 📈 Status                   ← per layer status table
-## 🚀 Setup Guide              ← how to reproduce
-## 📝 Design Decisions         ← why you made key choices
+Data Science:
+- EDA: Not started
+- Feature engineering:  Not started
+- Models testing: Not started
+    - Pure daily avg: Not started
+    - Linear Regression: Not started
+    - XGBoost: Not started
+    - SARIMAX: Not started
+    - LSTM: Not started
+    - Prophet: Not started
+    (- Lag-Llama? TBC as univariate only)
+- Ensemble model: Not started
 
-Why 3 data sources
-Why medallion architecture
-Why Silver preserves NULLs
-Why separate ref dataset
-Why MLflow over Vertex Experiments
-Why Cloud Run for retraining
+## 🚀 Setup Guide
+### Prerequisites
+- Python 3.13
+- GCP account with BigQuery enabled
+- API keys: Visual Crossing (free tier)
+- Google Cloud SDK installed
+- Evidently AI (drift detection)
+
+### Installation
+pip install -r requirements.txt
+
+### Authentication
+- Windows: set GOOGLE_APPLICATION_CREDENTIALS=path/to/service-account.json
+- Mac/Linux: export GOOGLE_APPLICATION_CREDENTIALS=path/to/service-account.json
+
+### Running the pipeline
+# Daily run
+python main.py
+
+# Backfill
+python backfill.py
+
+## 📝 Design Decisions
+- Medallion architecture: current industry data engineering best practice.
+- Silver layer: 
+    - Keeps datasources separate as each one will fill in its own ML experiment. They will also be an experiment merging them to see which combination outputs the best results.
+    - NULLS are NOT imputed in this layer as they are to be examined in the ML experiments part of the pipeline.
+- Docker container chosen for project reproducibility as it's industry widest used tool as the time of the project.
+- MLflow chosen over Vertex Experiments due to cost constraint.
+- Cloud Run chosen for model retraining as this solution aligns with the "no costs/minimal cost" approach.
+- Evidently AI for drift detection as it's open source, purpose-built for ML monitoring, and integrates natively with MLflow.
