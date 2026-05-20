@@ -100,21 +100,10 @@ Data ingestion and engineering:
 - Big Query Gold layer: Provide human-readable data for reporting (by joining reference tables for weather code descriptions), including the output of the ML retained design.
 
 Data Science and inference:
-- Each datasource is fed into experiment separately and combined.
-- All models to be trained on calendar/cyclical features only (as opposed to lag features) due to the nature of desired prediction (probability distributions).
-- Several models to be trained on 18-years train set and assessed individually on 2-years test set. Ensemble evaluated on test set; final inference ensemble restricted to best performing models.
-    - Daily average baseline: The simplest form of prediction, climatological anchor.
-    - Linear Regression: Multivariate, including feature relevance analysis and easily interpretable.
-    - XGBoost: Capture non linear seasonal patterns.
-    - SARIMAX: To isolate and extrapolate different level of patterns in the data (baseline, trend, seasonality) with relevant confidence intervals.
-    - Prophet: Decomposes the time series into trend, multi-level seasonality, and noise. Queries learned seasonal patterns at any future date directly: it is the natural fit for climatological inference with long horizon window. Produces native uncertainty intervals.
-- Models considered but rejected:
-    - LSTM: the forecast horizon is long, the data I collected is quite limited (about 170k rows per weather data provider) so it is unlikely to make it in my final inference tool.
-    - Lag-Llama: Current state of the art which probabilistic output suits this project but limited by univariate input (loose cross-variables relationships) and long forecast window. It is expected to underperform simpler models in this use case.
-    - Temporal Fusion Transformer: Considered seriously as a multivariate, probabilistic, multi-horizon model that addresses the key limitations of Lag-Llama. Rejected on data volume grounds ( about 170k rows per source is insufficient to express TFT's advantage over simpler seasonal models) and implementation complexity disproportionate to marginal gain over Prophet + XGBoost ensemble at a 400+ day horizon.
+TBC
 
 ## ⚙️ Technical Stack
-- Python 3.13.13
+- Python 3.12.10
 - Google BigQuery
 - Meteostat / Open-Meteo / Visual Crossing APIs
 - Google Colab & Visual Studio Code
@@ -170,7 +159,7 @@ LSTM has been considered but dropped: my forecast horizon is long, the data I co
 
 ## 🚀 Setup Guide
 ### Prerequisites
-- Python 3.13
+- Python 3.12
 - GCP account with BigQuery enabled
 - API keys: Visual Crossing (free tier)
 - Google Cloud SDK installed
@@ -191,6 +180,7 @@ python main.py
 python backfill.py
 
 ## 📝 Design Decisions
+### Data ingestion & Engineering:
 - Medallion architecture: current industry data engineering best practice.
 - Silver layer: 
     - Keeps datasources separate as each one will fill in its own ML experiment. They will also be an experiment merging them to see which combination outputs the best results.
@@ -199,3 +189,17 @@ python backfill.py
 - MLflow chosen over Vertex Experiments due to cost constraint.
 - Cloud Run chosen for model retraining as this solution aligns with the "no costs/minimal cost" approach.
 - Evidently AI for drift detection as it's open source, purpose-built for ML monitoring, and integrates natively with MLflow.
+
+### Data Science & Inference: 
+- Each datasource is fed into experiment separately and combined.
+- All models to be trained on calendar/cyclical features only (as opposed to lag features) due to the nature of desired prediction (probability distributions).
+- Several models to be trained on 18-years train set and assessed individually on 2-years test set. Ensemble evaluated on test set; final inference ensemble restricted to best performing models.
+    - Daily average baseline: The simplest form of prediction, climatological anchor.
+    - Linear Regression: Multivariate, including feature relevance analysis and easily interpretable.
+    - XGBoost: Capture non linear seasonal patterns.
+    - SARIMAX: To isolate and extrapolate different level of patterns in the data (baseline, trend, seasonality) with relevant confidence intervals.
+    - Prophet: Decomposes the time series into trend, multi-level seasonality, and noise. Queries learned seasonal patterns at any future date directly: it is the natural fit for climatological inference with long horizon window. Produces native uncertainty intervals.
+- Models considered but rejected:
+    - LSTM: the forecast horizon is long, the data I collected is quite limited (about 170k rows per weather data provider) so it is unlikely to make it in my final inference tool.
+    - Lag-Llama: Current state of the art which probabilistic output suits this project but limited by univariate input (loose cross-variables relationships) and long forecast window. It is expected to underperform simpler models in this use case.
+    - Temporal Fusion Transformer: Considered seriously as a multivariate, probabilistic, multi-horizon model that addresses the key limitations of Lag-Llama. Rejected on data volume grounds ( about 170k rows per source is insufficient to express TFT's advantage over simpler seasonal models) and implementation complexity disproportionate to marginal gain over Prophet + XGBoost ensemble at a 400+ day horizon.

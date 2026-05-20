@@ -38,3 +38,4 @@ TARGET_TEMPERATURE = "temperature"
 
 # Sources
 SOURCES = ["meteostat", "open_meteo", "visual_crossing", "average", "weighted"]
+MODELS = ["baseline", "linear", "xgboost", "sarimax", "prophet"]
