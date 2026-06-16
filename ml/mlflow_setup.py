@@ -17,7 +17,8 @@ if __name__ == "__main__":
     # Experiments set up:
     experiment_name = [EXPERIMENT_RAINFALL, EXPERIMENT_TEMPERATURE]
     for name in experiment_name:
-        if mlflow.get_experiment_by_name(name) is None:
+        exp = mlflow.get_experiment_by_name(name)
+        if exp is None or exp.lifecycle_stage == "deleted":
             mlflow.create_experiment(name=name, artifact_location = f"{MLFLOW_ARTIFACT_URI}/{name}")
         mlflow.set_experiment(experiment_id = mlflow.get_experiment_by_name(name).experiment_id)
 
